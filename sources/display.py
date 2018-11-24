@@ -2,9 +2,9 @@ from sources import lian, db, lm, openid
 from flask_login import login_user, logout_user, login_required, current_user
 from flask import render_template, flash, redirect, session, url_for, request, g
 from sources.forms.auth import LoginForm
+from sources.forms.edit_profile import EditForm
 from sources.models.users import User, ROLE_USER, ROLE_ADMIN
 from datetime import datetime
-
 
 
 # All actions before displaying the page
@@ -44,6 +44,7 @@ def after_login(resp):
         username = resp.nickname
         if username is None or username == "":
             username = resp.email.split('@')[0]
+        username = User.make_unique_username(username)
         user = User(username=username, email=resp.email, role=ROLE_USER)
         db.session.add(user)
         db.session.commit()
@@ -105,3 +106,29 @@ def user(username):
                            user=user,
                            posts=posts,
                            )
+@lian.route('/edit', methods = ['GET', 'POST'])
+@login_required
+def edit():
+    form = EditForm(g.user.username)
+    if form.validate_on_submit():
+        g.user.username = form.username.data
+        g.user.about = form.about.data
+        db.session.add(g.user)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('edit'))
+    else:
+        form.username.data = g.user.username
+        form.about.data = g.user.about
+    return render_template('/default/edit_profile.html',
+        form = form)
+
+@lian.errorhandler(404)
+def not_found_error(error):
+    return render_template('/default/404.html'), 404
+
+@lian.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('/default/500.html'), 500
+

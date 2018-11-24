@@ -1,2 +1,2 @@
 from sources import lian
-lian.run(debug=True)
+lian.run(debug=False)

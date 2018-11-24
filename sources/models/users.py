@@ -17,6 +17,17 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime)
     def avatar(self, size):
             return 'http://www.gravatar.com/avatar/' + md5(self.email.encode('utf-8')).hexdigest() + '?d=mm&s=' + str(size)
+    @staticmethod
+    def make_unique_username(username):
+        if User.query.filter_by(username=username).first() == None:
+            return username
+        version = 2
+        while True:
+            new_username = username + str(version)
+            if User.query.filter_by(username=new_username).first() == None:
+                break
+            version += 1
+        return new_username
 
 def is_authenticated(self):
     return True
