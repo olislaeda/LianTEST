@@ -15,6 +15,17 @@ function set_openid(open_id, pr)
 }
 </script>
 <h1>Sign In</h1>
+<form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=32) }}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=32) }}
+        </p>
+</form>
 <form action="" method="post" name="login">
     {{form.hidden_tag()}}
     <p>
@@ -27,7 +38,7 @@ function set_openid(open_id, pr)
         <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');">{{pr.name}}</a> |
         {% endfor %}
     </p>
-    <p>{{form.id_key}} Remember Me</p>
-    <p><input type="submit" value="Sign In"></p>
+    <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+    <p>{{ form.submit() }}</p>
 </form>
 {% endblock %}

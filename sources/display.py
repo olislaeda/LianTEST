@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from sources import lian, db, lm, openid
 from flask_login import login_user, logout_user, login_required, current_user
 from flask import render_template, flash, redirect, session, url_for, request, g
@@ -25,7 +26,7 @@ def login():
         return redirect(url_for('index.php'))
     form = LoginForm()
     if form.validate_on_submit():
-        session['remember_me'] = form.id_key.data
+        session['remember_me'] = form.remember_me.data
         return openid.try_login(form.open_id.data, ask_for=['nickname', 'email'])
     return render_template('/default/login.html',
                            title='Sign In',
@@ -67,15 +68,14 @@ def load_user(id):
 @lian.route('/index')
 @login_required
 def index():
-    #s =
     user = g.user
     posts = [  # список выдуманных постов
         {
-            'author': {'nickname': 'John'},
+            'author': {'username': 'John'},
             'body': 'Beautiful day in Portland!'
         },
         {
-            'author': {'nickname': 'Susan'},
+            'author': {'username': 'Susan'},
             'body': 'The Avengers movie was so cool!'
         }
     ]
